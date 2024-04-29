@@ -2,8 +2,8 @@
 
 import Image from 'next/image'
 import { cn } from '../utils/classNameUtils'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 const caseStudies = [
   {
@@ -38,10 +38,15 @@ const caseStudies = [
   },
 ]
 
+const caseStudyTitleClass =
+  'absolute lg:text-[220px] inline-flex flex-wrap gap-x-7 justify-center tracking-[0.04em] lg:leading-[176px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 min-w-[898px] w-full leading-none text-center font-semibold uppercase max-w-4xl'
+
 export default function Home() {
-  const [activeCaseStudyId, setActiveCaseStudyId] = useState(2)
-  const [previousCaseStudyId, setPreviousCaseStudyId] = useState(1)
-  const [nextCaseStudyId, setNextCaseStudyId] = useState(3)
+  const [loadingPreviousCaseStudyIndex, setLoadingPreviousCaseStudyIndex] = useState(caseStudies.length - 2)
+  const [previousCaseStudyIndex, setPreviousCaseStudyIndex] = useState(caseStudies.length - 1)
+  const [activeCaseStudyIndex, setActiveCaseStudyIndex] = useState(0)
+  const [nextCaseStudyIndex, setNextCaseStudyIndex] = useState(1)
+  const [loadingNextCaseStudyIndex, setLoadingNextCaseStudyIndex] = useState(2)
 
   return (
     <main>
@@ -50,14 +55,19 @@ export default function Home() {
           <p className='uppercase tracking-wider text-white font-semibold'>xyz - Alex Simpson</p>
         </div>
         {caseStudies.map((caseStudy, caseStudyIndex) => {
-          const isActiveCaseStudy = activeCaseStudyId === caseStudy.id
-          const isPreviousCaseStudy = previousCaseStudyId === caseStudy.id
-          const isNextCaseStudy = nextCaseStudyId === caseStudy.id
+          const isActiveCaseStudy = activeCaseStudyIndex === caseStudyIndex
+          const isPreviousCaseStudy = previousCaseStudyIndex === caseStudyIndex
+          const isNextCaseStudy = nextCaseStudyIndex === caseStudyIndex
+          const isLoadingPreviousCaseStudy = loadingPreviousCaseStudyIndex === caseStudyIndex
+          const isLoadingNextCaseStudy = loadingNextCaseStudyIndex === caseStudyIndex
+
           const isHiddenCaseStudy = !isActiveCaseStudy && !isPreviousCaseStudy && !isNextCaseStudy
+
+          const caseStudyTitleArray = caseStudy.title.split(' ')
 
           return (
             <div key={caseStudy.id}>
-              <div className='absolute top-0 left-0 w-full h-full'>
+              <div className='absolute top-0 left-0 w-full h-full max-w-[100vw] overflow-hidden'>
                 <div className='relative w-full h-full'>
                   <Image
                     src={caseStudy.largeImg}
@@ -72,54 +82,98 @@ export default function Home() {
                   <div className='absolute top-0 left-0 w-full h-full backdrop-blur-2xl' />
 
                   <div className='container py-4 h-full w-full pointer-events-none'>
-                    <div
-                      className={cn('relative h-full w-full z-10', {
-                        'opacity-1': !isHiddenCaseStudy,
-                        'opacity-0 pointer-events-none': isHiddenCaseStudy,
-                      })}>
+                    <div className={cn('relative h-full w-full z-10', {})}>
                       <h2
-                        className={cn(
-                          'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 lg:text-[220px] tracking-[0.04em] leading-none text-center font-semibold uppercase min-w-[898px] text-transparent lg:leading-[176px]',
-                          {
-                            'opacity-1': isActiveCaseStudy,
-                            'opacity-0 pointer-events-none': !isActiveCaseStudy,
-                          }
-                        )}
+                        className={cn('text-transparent', caseStudyTitleClass)}
                         style={{
                           WebkitTextStroke: '1px white',
                         }}>
-                        {caseStudy.title}
+                        {caseStudyTitleArray.map((word, index) => {
+                          return (
+                            <div key={index} className='overflow-hidden'>
+                              <h2
+                                className={cn('transition-all duration-500', {
+                                  'translate-y-[125%]': !isActiveCaseStudy,
+                                  'translate-y-4 delay-1000': isActiveCaseStudy,
+                                })}>
+                                {word}
+                              </h2>
+                            </div>
+                          )
+                        })}
                       </h2>
-                      <div
+                      <motion.div
+                        initial={false} // Use false as the initial position state
+                        animate={{
+                          top: isActiveCaseStudy ? '50%' : isLoadingPreviousCaseStudy || isPreviousCaseStudy ? '100%' : '0%',
+                          left: isActiveCaseStudy ? '50%' : isLoadingPreviousCaseStudy || isPreviousCaseStudy ? '0' : '100%',
+                          translateX: isActiveCaseStudy
+                            ? '-50%'
+                            : isLoadingPreviousCaseStudy
+                              ? '-200%'
+                              : isLoadingNextCaseStudy
+                                ? '100%'
+                                : isPreviousCaseStudy
+                                  ? '0%'
+                                  : '-100%',
+                          translateY: isActiveCaseStudy
+                            ? '-50%'
+                            : isLoadingPreviousCaseStudy || isPreviousCaseStudy
+                              ? '-100%'
+                              : '0%',
+                          maxWidth: isActiveCaseStudy ? '512px' : '248px',
+                          opacity: isHiddenCaseStudy ? 0 : 1,
+                        }}
+                        transition={{ duration: 0.75, ease: 'easeOut', delay: 0.3 }}
                         onClick={() => {
-                          setActiveCaseStudyId(caseStudy.id)
-                          setPreviousCaseStudyId(caseStudyIndex === 0 ? caseStudies.length : caseStudies[caseStudyIndex - 1].id)
-                          setNextCaseStudyId(caseStudyIndex === caseStudies.length - 1 ? 1 : caseStudies[caseStudyIndex + 1].id)
+                          setActiveCaseStudyIndex(caseStudyIndex)
+
+                          setPreviousCaseStudyIndex(caseStudyIndex === 0 ? caseStudies.length - 1 : caseStudyIndex - 1)
+                          setNextCaseStudyIndex(caseStudyIndex === caseStudies.length - 1 ? 0 : caseStudyIndex + 1)
+
+                          setLoadingPreviousCaseStudyIndex(
+                            caseStudyIndex === 0
+                              ? caseStudies.length - 2
+                              : caseStudyIndex - 2 < 0
+                                ? caseStudies.length + (caseStudyIndex - 2)
+                                : caseStudyIndex - 2
+                          )
+                          setLoadingNextCaseStudyIndex(
+                            caseStudyIndex === caseStudies.length - 1
+                              ? 1
+                              : caseStudyIndex + 2 >= caseStudies.length
+                                ? caseStudyIndex + 2 - caseStudies.length
+                                : caseStudyIndex + 2
+                          )
                         }}
                         className={cn(
                           'absolute overflow-hidden rounded-[10px] border-black border aspect-[7/9] w-full hover:cursor-pointer',
                           {
-                            'max-w-[512px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2': isActiveCaseStudy,
-                            'max-w-[248px]': !isActiveCaseStudy,
-                            'bottom-0 left-0 pointer-events-auto': isPreviousCaseStudy,
-                            'top-0 right-0 pointer-events-auto': isNextCaseStudy,
+                            'pointer-events-auto': isPreviousCaseStudy || isNextCaseStudy,
                           }
                         )}>
                         <Image src={caseStudy.largeImg} alt={caseStudy.title} fill className={cn('object-cover')} />
-                        <h2
-                          className={cn(
-                            'absolute lg:text-[220px] tracking-[0.04em] lg:leading-[176px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-30 min-w-[898px] w-full leading-none text-center font-semibold text-white uppercase max-w-4xl',
-                            {
-                              'opacity-1': isActiveCaseStudy,
-                              'opacity-0 pointer-events-none': !isActiveCaseStudy,
-                            }
-                          )}
+
+                        <div
+                          className={cn('text-white', caseStudyTitleClass)}
                           style={{
                             WebkitTextStroke: '1px white',
                           }}>
-                          {caseStudy.title}
-                        </h2>
-                      </div>
+                          {caseStudyTitleArray.map((word, index) => {
+                            return (
+                              <div key={index} className='overflow-hidden'>
+                                <h2
+                                  className={cn('transition-all duration-500', {
+                                    'translate-y-[125%]': !isActiveCaseStudy,
+                                    'translate-y-4 delay-1000': isActiveCaseStudy,
+                                  })}>
+                                  {word}
+                                </h2>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
