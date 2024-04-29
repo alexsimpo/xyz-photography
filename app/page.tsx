@@ -125,7 +125,7 @@ export default function Home() {
                     src={caseStudy.largeImg}
                     alt={caseStudy.title}
                     fill
-                    className={cn('transition-opacity duration-1000 object-cover', {
+                    className={cn('transition-opacity duration-[1500ms] object-cover', {
                       'opacity-1': isActiveCaseStudy,
                       'opacity-0 pointer-events-none': !isActiveCaseStudy,
                     })}
@@ -155,7 +155,7 @@ export default function Home() {
                         })}
                       </h2>
                       <motion.div
-                        initial={false} // Use false as the initial position state
+                        initial={false}
                         animate={{
                           top: isActiveCaseStudy ? '50%' : isLoadingPreviousCaseStudy || isPreviousCaseStudy ? '100%' : '0%',
                           left: isActiveCaseStudy ? '50%' : isLoadingPreviousCaseStudy || isPreviousCaseStudy ? '0' : '100%',
