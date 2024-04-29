@@ -9,6 +9,7 @@ export const GalleryCursor = ({ progress }: { progress: number }) => {
 
     return () => window.removeEventListener('mousemove', (e) => setMousePosition({ x: e.clientX, y: e.clientY }))
   }, [])
+
   return (
     <div className='fixed top-0 left-0 h-screen w-screen pointer-events-none z-50'>
       <div className='relative h-full w-full'>

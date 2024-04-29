@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import { cn } from '../utils/classNameUtils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { GalleryCursor } from '../components/GalleryCursor'
+import useMediaQuery from '../hooks/useMediaQuery'
 
 const caseStudies = [
   {
@@ -40,7 +41,7 @@ const caseStudies = [
 ]
 
 const caseStudyTitleClass =
-  'absolute lg:text-[220px] inline-flex flex-wrap gap-x-7 justify-center tracking-[0.04em] lg:leading-[176px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 min-w-[898px] w-full leading-none text-center font-semibold uppercase max-w-4xl'
+  'absolute text-[100px] lg:text-[220px] inline-flex flex-wrap gap-x-7 justify-center tracking-[0.04em] lg:leading-[176px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 lg:min-w-[898px] w-full leading-none text-center font-semibold uppercase max-w-4xl'
 
 export default function Home() {
   const [loadingPreviousCaseStudyIndex, setLoadingPreviousCaseStudyIndex] = useState(caseStudies.length - 2)
@@ -49,6 +50,53 @@ export default function Home() {
   const [nextCaseStudyIndex, setNextCaseStudyIndex] = useState(1)
   const [loadingNextCaseStudyIndex, setLoadingNextCaseStudyIndex] = useState(2)
   const [progress, setProgress] = useState(0)
+  const isMobile = useMediaQuery(959, 'max')
+  const [canScroll, setCanScroll] = useState(true)
+
+  const updateCaseStudyIndexes = (caseStudyIndex: number) => {
+    setActiveCaseStudyIndex(caseStudyIndex)
+
+    setPreviousCaseStudyIndex(caseStudyIndex === 0 ? caseStudies.length - 1 : caseStudyIndex - 1)
+    setNextCaseStudyIndex(caseStudyIndex === caseStudies.length - 1 ? 0 : caseStudyIndex + 1)
+
+    setLoadingPreviousCaseStudyIndex(
+      caseStudyIndex === 0
+        ? caseStudies.length - 2
+        : caseStudyIndex - 2 < 0
+          ? caseStudies.length + (caseStudyIndex - 2)
+          : caseStudyIndex - 2
+    )
+    setLoadingNextCaseStudyIndex(
+      caseStudyIndex === caseStudies.length - 1
+        ? 1
+        : caseStudyIndex + 2 >= caseStudies.length
+          ? caseStudyIndex + 2 - caseStudies.length
+          : caseStudyIndex + 2
+    )
+
+    setProgress(caseStudyIndex / caseStudies.length)
+  }
+
+  useEffect(() => {
+    const handleMouseWheel = (e: WheelEvent) => {
+      if (canScroll) {
+        setCanScroll(false)
+        if (e.deltaY > 0) {
+          updateCaseStudyIndexes(previousCaseStudyIndex)
+        } else {
+          updateCaseStudyIndexes(nextCaseStudyIndex)
+        }
+
+        setTimeout(() => {
+          setCanScroll(true)
+        }, 1000)
+      }
+    }
+
+    window.addEventListener('wheel', handleMouseWheel)
+
+    return () => window.removeEventListener('wheel', handleMouseWheel)
+  }, [activeCaseStudyIndex, canScroll])
 
   return (
     <main>
@@ -125,32 +173,12 @@ export default function Home() {
                             : isLoadingPreviousCaseStudy || isPreviousCaseStudy
                               ? '-100%'
                               : '0%',
-                          maxWidth: isActiveCaseStudy ? '512px' : '248px',
+                          maxWidth: isActiveCaseStudy ? '512px' : !isMobile ? '248px' : '100px',
                           opacity: isHiddenCaseStudy ? 0 : 1,
                         }}
                         transition={{ duration: 0.75, ease: 'easeOut', delay: 0.3 }}
                         onClick={() => {
-                          setActiveCaseStudyIndex(caseStudyIndex)
-
-                          setPreviousCaseStudyIndex(caseStudyIndex === 0 ? caseStudies.length - 1 : caseStudyIndex - 1)
-                          setNextCaseStudyIndex(caseStudyIndex === caseStudies.length - 1 ? 0 : caseStudyIndex + 1)
-
-                          setLoadingPreviousCaseStudyIndex(
-                            caseStudyIndex === 0
-                              ? caseStudies.length - 2
-                              : caseStudyIndex - 2 < 0
-                                ? caseStudies.length + (caseStudyIndex - 2)
-                                : caseStudyIndex - 2
-                          )
-                          setLoadingNextCaseStudyIndex(
-                            caseStudyIndex === caseStudies.length - 1
-                              ? 1
-                              : caseStudyIndex + 2 >= caseStudies.length
-                                ? caseStudyIndex + 2 - caseStudies.length
-                                : caseStudyIndex + 2
-                          )
-
-                          setProgress(caseStudyIndex / caseStudies.length)
+                          updateCaseStudyIndexes(caseStudyIndex)
                         }}
                         className={cn(
                           'absolute overflow-hidden rounded-[10px] border-black border aspect-[7/9] w-full hover:cursor-pointer',
