@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { cn } from '../utils/classNameUtils'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { GalleryCursor } from '../components/GalleryCursor'
 
 const caseStudies = [
   {
@@ -47,9 +48,12 @@ export default function Home() {
   const [activeCaseStudyIndex, setActiveCaseStudyIndex] = useState(0)
   const [nextCaseStudyIndex, setNextCaseStudyIndex] = useState(1)
   const [loadingNextCaseStudyIndex, setLoadingNextCaseStudyIndex] = useState(2)
+  const [progress, setProgress] = useState(0)
 
   return (
     <main>
+      <GalleryCursor progress={progress} />
+
       <section className='min-h-screen relative'>
         <div className='container py-4 relative z-10'>
           <p className='uppercase tracking-wider text-white font-semibold'>xyz - Alex Simpson</p>
@@ -145,6 +149,8 @@ export default function Home() {
                                 ? caseStudyIndex + 2 - caseStudies.length
                                 : caseStudyIndex + 2
                           )
+
+                          setProgress(caseStudyIndex / caseStudies.length)
                         }}
                         className={cn(
                           'absolute overflow-hidden rounded-[10px] border-black border aspect-[7/9] w-full hover:cursor-pointer',

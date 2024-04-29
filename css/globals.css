@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.progress-circle {
+  display: flex;
+  width: 42px;
+  height: 42px;
+
+  & svg {
+    & circle {
+      transtion: all 0.1s;
+      stroke-width: 1;
+      stroke-dasharray: 450;
+      stroke-dashoffset: 315;
+      stroke-linecap: round;
+    }
+  }
+}
