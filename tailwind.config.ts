@@ -17,6 +17,7 @@ const config: Config = {
     },
     fontFamily: {
       sans: ['var(--font-tungsten)', 'Helvetica', 'Arial', 'sans-serif'],
+      system: ['Helvetica', 'Arial', 'sans-serif'],
     },
     extend: {
       colors: {},
@@ -25,5 +26,3 @@ const config: Config = {
   plugins: [],
 }
 export default config
-
-// CAEC70C8-A9664AA9-8B685192-57377890

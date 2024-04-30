@@ -75,12 +75,13 @@ export const Gallery = () => {
           : caseStudyIndex + 2
     )
 
-    setProgress(caseStudyIndex / caseStudies.length)
+    setProgress(caseStudyIndex / (caseStudies.length - 1))
   }
 
   useEffect(() => {
     const handleMouseWheel = (e: WheelEvent) => {
       if (canScroll) {
+        e.preventDefault()
         setCanScroll(false)
         if (e.deltaY > 0) {
           updateCaseStudyIndexes(previousCaseStudyIndex)
@@ -133,7 +134,7 @@ export const Gallery = () => {
 
                   <div className='absolute top-0 left-0 w-full h-full backdrop-blur-2xl' />
 
-                  <div className='container py-4 h-full w-full pointer-events-none'>
+                  <div className={cn('container py-4 h-full w-full pointer-events-none')}>
                     <div className={cn('relative h-full w-full z-10', {})}>
                       <h2
                         className={cn('text-transparent', caseStudyTitleClass)}
@@ -214,6 +215,37 @@ export const Gallery = () => {
             </div>
           )
         })}
+
+        <div className='absolute left-1/2 -translate-x-1/2 bottom-8 lg:bottom-20 flex gap-2 items-center'>
+          <p className='font-system text-[10px] text-white uppercase tracking-[0.08em] mr-4'>
+            {activeCaseStudyIndex + 1} of {caseStudies.length}
+          </p>
+          {caseStudies.map((caseStudy, caseStudyIndex) => {
+            return (
+              <div
+                key={caseStudy.id}
+                className={cn('w-[5px] h-[8px] rounded-sm cursor-none border-white border', {
+                  'bg-white': activeCaseStudyIndex === caseStudyIndex,
+                  'bg-white/10': activeCaseStudyIndex !== caseStudyIndex,
+                })}
+              />
+            )
+          })}
+        </div>
+
+        <div className='absolute right-[264px] translate-x-full tracking-[0.08em] bottom-8 lg:bottom-20 flex flex-col gap-4 font-system text-[10px] text-white uppercase'>
+          <p>
+            Johanna Hobel
+            <br /> for WILD
+          </p>
+          <p className='self-end'>Dec 2019</p>
+          <button
+            onMouseEnter={() => setCursorPointerHover(true)}
+            onMouseLeave={() => setCursorPointerHover(false)}
+            className='py-2 px-4 bg-white text-black tracking-[0.08em] font-bold uppercase rounded-full cursor-none'>
+            Have a look
+          </button>
+        </div>
       </section>
     </>
   )
