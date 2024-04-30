@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { cn } from '../utils/classNameUtils'
 
-export const GalleryCursor = ({ progress }: { progress: number }) => {
+export const GalleryCursor = ({ progress, cursorPointerHover = false }: { progress: number; cursorPointerHover: boolean }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -22,7 +22,15 @@ export const GalleryCursor = ({ progress }: { progress: number }) => {
             left: mousePosition.x,
           }}>
           <CircleSVG progress={progress} />
-          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white w-1 h-1' />
+          <div
+            className={cn(
+              'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all bg-white rounded-full',
+              {
+                'w-1 h-1': !cursorPointerHover,
+                'w-6 h-6': cursorPointerHover,
+              }
+            )}
+          />
         </div>
       </div>
     </div>
@@ -32,11 +40,11 @@ export const GalleryCursor = ({ progress }: { progress: number }) => {
 const CircleSVG = ({ progress }: { progress: number }) => {
   return (
     <div className='progress-circle'>
-      <svg height='42' width='42' xmlns='http://www.w3.org/2000/svg'>
+      <svg height='40' width='40' xmlns='http://www.w3.org/2000/svg'>
         <circle
-          r='21'
-          cx='21'
-          cy='21'
+          r='20'
+          cx='20'
+          cy='20'
           fill='transparent'
           stroke='white'
           strokeWidth='1'
