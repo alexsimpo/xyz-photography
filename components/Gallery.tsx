@@ -216,7 +216,7 @@ export const Gallery = () => {
           )
         })}
 
-        <div className='absolute left-1/2 -translate-x-1/2 bottom-8 lg:bottom-20 flex gap-2 items-center'>
+        <div className='absolute left-1/2 -translate-x-1/2 bottom-8 lg:bottom-16 flex gap-2 items-center'>
           <p className='font-system text-[10px] text-white uppercase tracking-[0.08em] mr-4'>
             {activeCaseStudyIndex + 1} of {caseStudies.length}
           </p>
@@ -233,7 +233,7 @@ export const Gallery = () => {
           })}
         </div>
 
-        <div className='absolute right-[264px] translate-x-full tracking-[0.08em] bottom-8 lg:bottom-20 flex flex-col gap-4 font-system text-[10px] text-white uppercase'>
+        <div className='absolute right-[264px] translate-x-full tracking-[0.08em] bottom-8 lg:bottom-16 flex flex-col gap-4 font-system text-[10px] text-white uppercase'>
           <p>
             Johanna Hobel
             <br /> for WILD
